@@ -319,23 +319,28 @@ func findProjectCategorySeq() {
 //Urutkan proyek berdasarkan total dana terkumpul (selection)
 func sortTotalDonationSelect() {
 	var tempArr = [10]Project{}
-	var j int
-	var max Project
+	var j, maxIndex int
+	var temp Project
 	tempArr = mainArr
-	fmt.Print("Sebelum sorting: ")
+	fmt.Println("Sebelum sorting: ")
 	fmt.Println(tempArr)
+	fmt.Println()
 	for i := 0; i < len(tempArr)-1; i++ {
-		max = tempArr[i]
+		maxIndex = i
 		j = i + 1
 		for j < len(tempArr) {
-			if tempArr[j].TotalDonation > max.TotalDonation && tempArr[j].TotalDonation != 0 {
-				max = tempArr[j]
-				j = j + 1
+			if tempArr[j].TotalDonation > tempArr[maxIndex].TotalDonation && tempArr[j].ProjectName != "" {
+				maxIndex = j
 			}
-			tempArr[i] = max
+			j = j + 1
+		}
+		if maxIndex != i {
+			temp = tempArr[i]
+			tempArr[i] = tempArr[maxIndex]
+			tempArr[maxIndex] = temp
 		}
 	}
-	fmt.Print("Setelah sorting: ")
+	fmt.Println("Setelah sorting: ")
 	fmt.Println(tempArr)
 }
 
@@ -350,7 +355,7 @@ func sortTotalDonationInsert() {
 	for i := 1; i < len(tempArr); i++ {
 		temp = tempArr[i]
 		j = i - 1
-		for j >= 0 && tempArr[j].TotalDonation > temp.TotalDonation {
+		for j >= 0 && tempArr[j].TotalDonation > temp.TotalDonation && tempArr[j].ProjectName != "" {
 			tempArr[j+1] = tempArr[j]
 			j = j - 1
 		}
@@ -363,20 +368,24 @@ func sortTotalDonationInsert() {
 //Urutkan proyek berdasarkan jumlah donatur (selection)
 func sortDonatorSelect() {
 	var tempArr = [10]Project{}
-	var j int
-	var max Project
+	var j, maxIndex int
+	var temp Project
 	tempArr = mainArr
 	fmt.Print("Sebelum sorting: ")
 	fmt.Println(tempArr)
 	for i := 0; i < len(tempArr); i++ {
-		max = tempArr[i]
+		maxIndex = i
 		j = i + 1
 		for j < len(tempArr) {
-			if tempArr[j].TotalDonator > max.TotalDonator && tempArr[j].TotalDonator != 0 {
-				max = tempArr[j]
-				j = j + 1
+			if tempArr[j].TotalDonator > tempArr[maxIndex].TotalDonator && tempArr[j].ProjectName != "" {
+				maxIndex = j
 			}
-			tempArr[i] = max
+			j = j + 1
+		}
+		if maxIndex != i {
+			temp = tempArr[i]
+			tempArr[i] = tempArr[maxIndex]
+			tempArr[maxIndex] = temp
 		}
 	}
 	fmt.Print("Setelah sorting: ")
@@ -394,7 +403,7 @@ func sortDonatorInsert() {
 	for i := 1; i < len(tempArr); i++ {
 		temp = tempArr[i]
 		j = i - 1
-		for j <= 0 && tempArr[j].TotalDonator < temp.TotalDonator && tempArr[j].TotalDonator != 0 {
+		for j <= 0 && tempArr[j].TotalDonator < temp.TotalDonator && tempArr[j].ProjectName != "" {
 			tempArr[j+1] = tempArr[j]
 			j = j - 1
 		}
@@ -412,4 +421,5 @@ func showPaidProject() {
 		}
 	}
 }
+
 
