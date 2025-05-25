@@ -37,7 +37,7 @@ func menu() {
 func main() {
 	var n, currentSize int
 	n = 100
-	test()
+	test(&currentSize)
 	for n != 0 {
 		menu()
 		fmt.Scan(&n)
@@ -50,21 +50,43 @@ func main() {
 		if n == 3 {
 			deleteProject(&currentSize)
 		}
+		if n == 4 {
+			donateToProject()
+		}
+		if n == 5 {
+			findProjectNameSeq()
+		}
 		if n == 6 {
 			findProjectNameBin()
 		}
 		if n == 7 {
 			findProjectCategorySeq()
 		}
+		if n == 8 {
+			sortTotalDonationSelect()
+		}
 		if n == 9 {
 			sortTotalDonationInsert()
+		}
+		if n == 10 {
+			sortDonatorSelect()
+		}
+		if n == 11 {
+			sortDonatorInsert()
+		}
+		if n == 12 {
+			showPaidProject()
+		}
+		//untuk testing
+		if n == 1234 {
+			fmt.Print(mainArr)
 		}
 	}
 
 }
 
 //Hanya untuk testing
-func test() {
+func test(currentSize *int) {
 	//index 0
 	mainArr[0].Creator = "Z"
 	mainArr[0].ProjectName = "Zproject"
@@ -91,6 +113,12 @@ func test() {
 	mainArr[4].Creator = "E"
 	mainArr[4].ProjectName = "Eproject"
 	mainArr[4].Category = "A"
+
+	for i := 0; i < len(mainArr); i++ {
+		if mainArr[i].ProjectName != "" {
+			*currentSize = *currentSize + 1
+		}
+	}
 }
 
 //Buat proyek baru
@@ -116,8 +144,12 @@ func createProject(currentSize *int) {
 	if nameTaken {
 		fmt.Print("Nama proyek telah terpakai")
 	} else {
-		mainArr[*currentSize] = newProject
-		*currentSize = *currentSize + 1
+		if *currentSize <= len(mainArr) {
+			mainArr[*currentSize] = newProject
+			*currentSize = *currentSize + 1
+		} else {
+			fmt.Print("Array penuh")
+		}
 	}
 }
 
@@ -131,7 +163,7 @@ func ChangeProject() {
 	fmt.Scan(&name)
 	for i := 0; i < len(mainArr); i++ {
 		if mainArr[i].Creator == name {
-			fmt.Println("--------------------")
+			fmt.Println("=====================================")
 			fmt.Println("Nama proyek: ", mainArr[i].ProjectName)
 
 		}
@@ -165,7 +197,7 @@ func deleteProject(currentSize *int) {
 	fmt.Scan(&name)
 	for i := 0; i < len(mainArr); i++ {
 		if mainArr[i].Creator == name {
-			fmt.Println("----------------------")
+			fmt.Println("=====================================")
 			fmt.Println("Nama proyek: ", mainArr[i].ProjectName)
 		}
 	}
@@ -184,6 +216,44 @@ func deleteProject(currentSize *int) {
 			} else {
 				fmt.Print("Penghapusan proyek dibatalkan.")
 			}
+		}
+	}
+}
+
+//Berikan donasi ke proyek
+func donateToProject() {
+	var nameProject string
+	var donation float64
+	fmt.Print("Masukan nama proyek yang akan diberi dana: ")
+	fmt.Scan(&nameProject)
+	fmt.Print("Masukan nominal dana yang ingin diberikan: ")
+	fmt.Scan(&donation)
+	for i := 0; i < len(mainArr); i++ {
+		if mainArr[i].ProjectName == nameProject {
+			mainArr[i].TotalDonation = mainArr[i].TotalDonation + donation
+			mainArr[i].TotalDonator = mainArr[i].TotalDonator + 1
+			fmt.Println("Donasi telah diberikan ke proyek ", mainArr[i], " sebesar: ", donation)
+			fmt.Println("Total donasi proyek sekarang adalah: ", mainArr[i].TotalDonation)
+			fmt.Println("Total donator proyek adalah: ", mainArr[i].TotalDonator)
+		}
+	}
+
+}
+
+//Cari proyek berdasarkan nama (sequential)
+func findProjectNameSeq() {
+	var name string
+	fmt.Print("Masukan nama proyek yang ingin dicari: ")
+	fmt.Scan(&name)
+	for i := 0; i < len(mainArr); i++ {
+		if mainArr[i].ProjectName == name {
+			fmt.Println("===========================================")
+			fmt.Println("Nama pemilik proyek: ", mainArr[i].Creator)
+			fmt.Println("Nama proyek: ", mainArr[i].ProjectName)
+			fmt.Println("Kategori proyek: ", mainArr[i].Category)
+			fmt.Println("Jumlah donator: ", mainArr[i].TotalDonator)
+			fmt.Println("Target dana: ", mainArr[i].TargetDonation)
+			fmt.Println("Dana yang terkumpul: ", mainArr[i].TotalDonation)
 		}
 	}
 }
@@ -222,7 +292,7 @@ func findProjectNameBin() {
 		}
 	}
 	if index == -1 {
-		fmt.Print("Proyek dengan kategori ", pickedName, " tidak ditemukan.")
+		fmt.Print("Proyek dengan nama ", pickedName, " tidak ditemukan.")
 	} else {
 		fmt.Println(tempArr[index])
 	}
@@ -235,6 +305,7 @@ func findProjectCategorySeq() {
 	fmt.Scan(&pickedCategory)
 	for i := 0; i < len(mainArr); i++ {
 		if mainArr[i].Category == pickedCategory {
+			fmt.Println("===========================================")
 			fmt.Println("Nama pemilik proyek: ", mainArr[i].Creator)
 			fmt.Println("Nama proyek: ", mainArr[i].ProjectName)
 			fmt.Println("Kategori proyek: ", mainArr[i].Category)
@@ -245,6 +316,29 @@ func findProjectCategorySeq() {
 	}
 }
 
+//Urutkan proyek berdasarkan total dana terkumpul (selection)
+func sortTotalDonationSelect() {
+	var tempArr = [10]Project{}
+	var j int
+	var max Project
+	tempArr = mainArr
+	fmt.Print("Sebelum sorting: ")
+	fmt.Println(tempArr)
+	for i := 0; i < len(tempArr)-1; i++ {
+		max = tempArr[i]
+		j = i + 1
+		for j < len(tempArr) {
+			if tempArr[j].TotalDonation > max.TotalDonation && tempArr[j].TotalDonation != 0 {
+				max = tempArr[j]
+				j = j + 1
+			}
+			tempArr[i] = max
+		}
+	}
+	fmt.Print("Setelah sorting: ")
+	fmt.Println(tempArr)
+}
+
 //Urutkan proyek berdasarkan total dana terkumpul (Insertion)
 func sortTotalDonationInsert() {
 	var tempArr = [10]Project{}
@@ -253,7 +347,7 @@ func sortTotalDonationInsert() {
 	tempArr = mainArr
 	fmt.Print("Sebelum sorting: ")
 	fmt.Println(tempArr)
-	for i := 1; i <= len(tempArr); i++ {
+	for i := 1; i < len(tempArr); i++ {
 		temp = tempArr[i]
 		j = i - 1
 		for j >= 0 && tempArr[j].TotalDonation > temp.TotalDonation {
@@ -264,5 +358,58 @@ func sortTotalDonationInsert() {
 	}
 	fmt.Print("Setelah sorting: ")
 	fmt.Println(tempArr)
+}
+
+//Urutkan proyek berdasarkan jumlah donatur (selection)
+func sortDonatorSelect() {
+	var tempArr = [10]Project{}
+	var j int
+	var max Project
+	tempArr = mainArr
+	fmt.Print("Sebelum sorting: ")
+	fmt.Println(tempArr)
+	for i := 0; i < len(tempArr); i++ {
+		max = tempArr[i]
+		j = i + 1
+		for j < len(tempArr) {
+			if tempArr[j].TotalDonator > max.TotalDonator && tempArr[j].TotalDonator != 0 {
+				max = tempArr[j]
+				j = j + 1
+			}
+			tempArr[i] = max
+		}
+	}
+	fmt.Print("Setelah sorting: ")
+	fmt.Println(tempArr)
+}
+
+//Urutkan proyek berdasarkan jumlah donatur (isertion)
+func sortDonatorInsert() {
+	var tempArr = [10]Project{}
+	var temp Project
+	var j int
+	tempArr = mainArr
+	fmt.Print("Sebelum sorting: ")
+	fmt.Println(tempArr)
+	for i := 1; i < len(tempArr); i++ {
+		temp = tempArr[i]
+		j = i - 1
+		for j <= 0 && tempArr[j].TotalDonator < temp.TotalDonator && tempArr[j].TotalDonator != 0 {
+			tempArr[j+1] = tempArr[j]
+			j = j - 1
+		}
+		tempArr[j+1] = temp
+	}
+	fmt.Print("Setelah sorting: ")
+	fmt.Println(tempArr)
+}
+
+//Tampilkan proyek yang telah memenuhi target pendanaan
+func showPaidProject() {
+	for i := 0; i < len(mainArr); i++ {
+		if mainArr[i].TotalDonation >= mainArr[i].TargetDonation {
+			fmt.Println(mainArr[i])
+		}
+	}
 }
 
